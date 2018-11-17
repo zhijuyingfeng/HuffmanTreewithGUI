@@ -84,7 +84,7 @@ private:
     void Compare();//Compare the difference between clear text and decoded cipher text
     void ShowDecodeText();
 //    void ComputeRate();//Compute the compressed rate
-//    void ShowHuffmanCoding();
+    void ShowHuffmanCoding();
 
 };
 

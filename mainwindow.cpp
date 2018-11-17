@@ -490,6 +490,7 @@ void MainWindow::on_show_huffman_tree_clicked()
         GenerateCipherText();
         decode();
         ShowDecodeText();
+        ShowHuffmanCoding();
 
         char compressed_rate[10]={0};
         sprintf(compressed_rate,"%.6lf", 100.0*CipherCharNum/TotalCharNum);
@@ -532,4 +533,24 @@ void MainWindow::ShowDecodeText()
     fscanf(file,"%[a-zA-Z,.\n ]",str);
     this->ui->textBrowser->setText(str);
     fclose(file);
+}
+
+void MainWindow::ShowHuffmanCoding()
+{
+    char str[10000]={0};
+    char line[100]={0};
+    for(int i=0;i<maxn;i++)
+    {
+        memset(line,0,sizeof(char)*100);
+        if(i>0)
+        {
+            sprintf(line,"%d %c : %s\n",i,charset[i],arr[i].path);
+        }
+        else
+        {
+            sprintf(line,"%d \\n : %s\n",i,arr[i].path);
+        }
+        strcat(str,line);
+    }
+    this->ui->huffman_coding->setText(str);
 }
