@@ -6,9 +6,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     this->ui->setupUi(this);
+    memset(charset,0,sizeof (charset));
+}
+
+void MainWindow::Init()
+{
     TotalCharNum=0;
     CipherCharNum=0;
-
+    memset(weight,0,sizeof(int)*maxn);
 }
 
 MainWindow::~MainWindow()
@@ -186,6 +191,15 @@ void MainWindow::encode()
                 }
         }
     }
+    char path[100]={0};
+    strcpy(path,directory);
+    strcat(path,"cleartext.txt");
+    //FILE* file = fopen(path, "w");//打开明文文件
+    std::string ClearText=str.toStdString();
+    std::ofstream ofs(path,std::fstream::out);
+    ofs<<ClearText;
+    ofs.close();
+    //fclose(file);//关闭明文文件
 }
 
 void MainWindow::SetCharset()
@@ -478,6 +492,7 @@ void MainWindow::on_show_huffman_tree_clicked()
 {
     if(charset[0]!='\n')
     {
+        Init();
         SetCharset();
         encode();
         for (int i = 0; i < maxn; i++)
@@ -486,7 +501,6 @@ void MainWindow::on_show_huffman_tree_clicked()
             arr[i].pos = i;
         }
         GenerateHuffmanTree();
-        CreateVisual();
         GenerateCipherText();
         decode();
         ShowDecodeText();
@@ -496,6 +510,10 @@ void MainWindow::on_show_huffman_tree_clicked()
         sprintf(compressed_rate,"%.6lf", 100.0*CipherCharNum/TotalCharNum);
 
         this->ui->compressed_rate->setText((QString)compressed_rate+"%");
+
+        char CharNum[10]={0};
+        sprintf(CharNum,"%d",TotalCharNum);
+        this->ui->total_char_num->setText(CharNum);
 
         Compare();
         char path[60];
@@ -509,6 +527,8 @@ void MainWindow::on_show_huffman_tree_clicked()
         else
             this->ui->difference->setText("There is no difference");
         fclose(DiffFile);
+
+        CreateVisual();
     }
     else
     {
@@ -553,4 +573,19 @@ void MainWindow::ShowHuffmanCoding()
         strcat(str,line);
     }
     this->ui->huffman_coding->setText(str);
+}
+
+
+void MainWindow::on_clear_text_textChanged()
+{
+    charset[0]=0;
+    for(int i=0;i<maxn*2-1;i++)
+    {
+        arr[i].weight = -1;//-1表示暂时没有用到该节点
+        memset(arr[i].path, 0, sizeof(arr[i].path));
+        arr[i].tag = L;
+        arr[i].parent = -1;//-1表示该节点暂时没有父节点
+        arr[i].LeftChild = -1;//-1表示暂时没有左儿子
+        arr[i].RightChild = -1;//-1表示暂时没有右儿子
+    }
 }

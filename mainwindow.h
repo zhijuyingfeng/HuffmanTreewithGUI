@@ -8,6 +8,8 @@
 #include <QString>
 #include <QDebug>
 #include <cstdio>
+#include <cstdlib>
+#include <fstream>
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +31,8 @@ private slots:
 
 
     void on_show_huffman_tree_clicked();
+
+    void on_clear_text_textChanged();
 
 private:
     Ui::MainWindow *ui;
