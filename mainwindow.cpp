@@ -32,19 +32,6 @@ MainWindow::TreeNode::TreeNode()
     RightChild = -1;//-1表示暂时没有右儿子
 }
 
-//void MainWindow::Init()
-//{
-//    for (int i = 0; i < maxn; i++)
-//    {
-//        cin >> arr[i].weight;
-//    }
-//    for (int i = 0; i < maxn; i++)
-//    {
-//        arr[i].weight = weight[i];
-//        arr[i].pos = i;
-//    }
-//}
-
 void MainWindow::GenerateHuffmanTree()
 {
     std::priority_queue<TreeNode, std::vector<TreeNode>, cmp> Heap;
@@ -167,7 +154,7 @@ void MainWindow::encode()
 //        }
 //    }
 //    fclose(file);//关闭明文文件
-    QString str=this->ui->clear_text->toPlainText();
+    QString str=this->ui->clear_text->toPlainText();//Receive text from text edit widget
     int len=str.length();
     char ch;
     TotalCharNum+=len;
@@ -197,7 +184,7 @@ void MainWindow::encode()
     //FILE* file = fopen(path, "w");//打开明文文件
     std::string ClearText=str.toStdString();
     std::ofstream ofs(path,std::fstream::out);
-    ofs<<ClearText;
+    ofs<<ClearText;//Write text to file
     ofs.close();
     //fclose(file);//关闭明文文件
 }
@@ -231,6 +218,7 @@ void MainWindow::GenerateCipherText()
 
     while (!feof(cleartext))//当没有到达明文文件尾时循环
     {
+        memset(str,0,sizeof(char)*Max);
         fgets(str, Max, cleartext);//每次处理一行
         clear_len = strlen(str);
         for (int i = 0; i < clear_len; i++)
@@ -296,7 +284,7 @@ void MainWindow::GenerateCipherText()
     }
     fputs(char_buffer, ciphertext);
 
-    CipherCharNum = (CipherCharNum >> 3) + 1;
+    //CipherCharNum = (CipherCharNum >> 3) + 1;
     fclose(cleartext);
     fclose(ciphertext);
 }
@@ -403,7 +391,7 @@ void MainWindow::decode()
     fclose(cleartext2);
 }
 
-char MainWindow::Bin2Char(const bool *arr)
+char MainWindow::Bin2Char(const bool *arr)//transfer a bool array of length 8 to a char
 {
     char sum = 0;
     for (int i = 7; i >=0; i--)
@@ -413,7 +401,7 @@ char MainWindow::Bin2Char(const bool *arr)
     return sum;
 }
 
-void MainWindow::Char2Bin(char ch, bool* arr)
+void MainWindow::Char2Bin(char ch, bool* arr)//transfer a char to a bool array of length 8
 {
     unsigned char temp = (unsigned char)ch;
     memset(arr, 0, sizeof(bool) * 8);
@@ -425,7 +413,7 @@ void MainWindow::Char2Bin(char ch, bool* arr)
     }
 }
 
-char MainWindow::GetPosChar(const int&pos)
+char MainWindow::GetPosChar(const int&pos)//获取某个位置上的字符
 {
     switch (pos)
     {
@@ -506,11 +494,13 @@ void MainWindow::on_show_huffman_tree_clicked()
         ShowDecodeText();
         ShowHuffmanCoding();
 
+        //Set compressed rate.
         char compressed_rate[10]={0};
-        sprintf(compressed_rate,"%.6lf", 100.0*CipherCharNum/TotalCharNum);
+        sprintf(compressed_rate,"%.6lf", 100.0*CipherCharNum/(6*TotalCharNum));
 
         this->ui->compressed_rate->setText((QString)compressed_rate+"%");
 
+        //Set total character number.
         char CharNum[10]={0};
         sprintf(CharNum,"%d",TotalCharNum);
         this->ui->total_char_num->setText(CharNum);
@@ -530,20 +520,20 @@ void MainWindow::on_show_huffman_tree_clicked()
 
         CreateVisual();
     }
-    else
+    else//Prevent to do the unnecessary work
     {
         system("eog /home/nigao/Documents/HuffmanTree/tree.svg");
     }
 }
 
-void MainWindow::Compare()
+void MainWindow::Compare()//invoke system command to compare the difference between clear text and decoded text.
 {
     char cmd[200]={0};
     sprintf(cmd,"diff %scleartext.txt %scleartext2.txt > %sdifference.txt",directory,directory,directory);
     system(cmd);
 }
 
-void MainWindow::ShowDecodeText()
+void MainWindow::ShowDecodeText()//Show the decoded text in the first text browser
 {
     char path[100];
     char str[Max]={0};
@@ -555,7 +545,7 @@ void MainWindow::ShowDecodeText()
     fclose(file);
 }
 
-void MainWindow::ShowHuffmanCoding()
+void MainWindow::ShowHuffmanCoding()//Show the Huffman coding in the second text browser
 {
     char str[10000]={0};
     char line[100]={0};
